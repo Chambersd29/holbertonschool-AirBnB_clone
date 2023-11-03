@@ -5,61 +5,49 @@ Este módulo define la clase BaseModel
 
 import uuid
 from datetime import datetime
-from models import storage
 
 
-class BaseModel():
+class BaseModel:
     """
-    Esta es la clase que heredarán las demas clases
+    Esta clase define BaseModel
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         """
-        Este método inicializa los atributos:
+        Este método inicializa lo sgte:
             id, created_at, updated_at
-        Args:
-            **kwargs: recibe un diccionario.
+            Attr:
+                id (str): Genera un id cada vez que se instancia.
+                created_ad (str): Genera la hora y fecha cada vez
+                        que se instancia un nuevo objeto.
+                updated_at (str): Genera y actualiza la hora y fecha,
+                        cada vez que se cambia nuestra instancia.
         """
-        if kwargs:
-            for k, v in kwargs.items():
-                if k != "__class__":
-                    setattr(self, k, v)
-
-            self.__dict__["created_at"] = datetime.strptime(
-                self.__dict__["created_at"], "%Y-%m-%dT%H:%M:%S.%f")
-            self.__dict__["updated_at"] = datetime.strptime(
-                self.__dict__["updated_at"], "%Y-%m-%dT%H:%M:%S.%f")
-
-        else:
-            self.id = str(uuid.uuid4())
-            self.created_at = datetime.now()
-            self.updated_at = datetime.now()
-            storage.new(self)
+        self.id = str(uuid.uuid4())
+        self.created_at = datetime.datetime.now().isoformat()
+        self.updated_at = datetime.datetime.now().isoformat()
 
     def __str__(self):
         """
-        Este metodo retorna una representación de nuestra instancia
+        Este metodo regresa una representación de nuestra instancia
+
+        Returns:
+            str: Representación de instancia.
         """
-
-        # return "[{}] ({}) {}".format(self.__class__.__name__,
-        #                              self.id, self.__dict__)
-
-        return f"[{type(self).__name__}] ({self.id}) " \
-            + str({k: v for k, v in self.__dict__.items() if k != '__class__'})
+        return f"[BaseModel] ({self.id}) {self.__dict__}"
 
     def save(self):
         """
         Este método actualiza la fecha de creación updated_at.
         """
-        self.updated_at = datetime.now()
-        storage.save()
+        self.updated_at = datetime.datetime.now().isoformat()
 
     def to_dict(self):
         """
-        Este método retorna un diccionario con los atributos de instancia.
+        Este método regresa un diccionario.
+
+        Returns:
+            dict: Regresa un diccionario con los atributos de instancia.
         """
-        new_dict = self.__dict__.copy()
-        new_dict['__class__'] = self.__class__.__name__
-        new_dict['created_at'] = new_dict['created_at'].isoformat()
-        new_dict['updated_at'] = new_dict['updated_at'].isoformat()
-        return new_dict
+        self.__dict__["__class__"] = "BaseModel"
+        return self.__dict__
