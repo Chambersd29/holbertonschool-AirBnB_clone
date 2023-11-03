@@ -12,20 +12,27 @@ class BaseModel:
     Esta clase define BaseModel
     """
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         """
-        Este método inicializa lo sgte:
+        Este método inicializa los atributos:
             id, created_at, updated_at
-        Attr:
-            id (str): Genera un id cada vez que se instancia.
-            created_ad (str): Genera la hora y fecha cada vez
-                    que se instancia un nuevo objeto.
-            updated_at (str): Genera y actualiza la hora y fecha,
-                    cada vez que se cambia nuestra instancia.
+        Args:
+            **kwargs: recibe un diccionario.
         """
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+        if kwargs:
+            for k, v in kwargs.items():
+                if k != "__class__":
+                    setattr(self, k, v)
+
+            self.__dict__["created_at"] = datetime.strptime(
+                self.__dict__["created_at"], "%Y-%m-%dT%H:%M:%S.%f")
+            self.__dict__["updated_at"] = datetime.strptime(
+                self.__dict__["updated_at"], "%Y-%m-%dT%H:%M:%S.%f")
+
+        else:
+            self.id = str(uuid.uuid4())
+            self.created_at = datetime.now()
+        self.updated_at = datetime.now() 
 
     def __str__(self):
         """
